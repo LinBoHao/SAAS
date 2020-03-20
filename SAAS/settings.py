@@ -125,6 +125,17 @@ SMS = 0
 STATIC_URL = '/static/'
 
 
+# 短信配置
+TENCENT_SMS_APP_ID = 66666666  # 自己应用ID
+TENCENT_SMS_APP_KEY = "6666"  # 自己应用Key
+TENCENT_SMS_SIGN = "6666"  # 自己腾讯云创建签名时填写的签名内容（使用公众号的话这个值一般是公众号全称或简称）
+
+TENCENT_SMS_TEMPLATE = {
+    'register': 559463,
+    'login': 559462,
+    'reset': 559464,
+}
+
 try:
     from .local_settings import *
 except ImportError:
