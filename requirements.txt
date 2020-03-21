@@ -1,4 +1,5 @@
 asgiref==3.2.5
 Django==1.11.28
 pytz==2019.3
+qcloudsms-py==0.1.4
 sqlparse==0.3.1
