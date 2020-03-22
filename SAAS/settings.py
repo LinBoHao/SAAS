@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app01.apps.App01Config',
+    'web.apps.WebConfig'
 ]
 
 MIDDLEWARE = [
@@ -135,6 +137,27 @@ TENCENT_SMS_TEMPLATE = {
     'login': 559462,
     'reset': 559464,
 }
+
+
+# redis相关配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://6.6.6.6:6379",  # 安装redis的主机的 IP 和 端口
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 1000,
+                "encoding": 'utf-8'
+            },
+            "PASSWORD": "000000000"  # redis密码
+        }
+    }
+}
+
+STATICFILES_DIRS = [
+     os.path.join(BASE_DIR, "static"),
+ ]
 
 try:
     from .local_settings import *
