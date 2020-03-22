@@ -4,6 +4,13 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg{
+            color: red;
+            position: absolute;
+            font-size: 13px;
+        }
+    </style>
 {% endblock %}
 {% block content %}
      <div class="account">
@@ -21,7 +28,7 @@
                                     </span>
                                 </div>
                                 <div class="col-xs-5">
-                                    <input id='smsBtn' type="button", class="btn btn-default" value="点我获取验证码">
+                                    <input id='btnSms' type="button", class="btn btn-default" value="点击获取验证码">
                                 </div>
                             </div>
                     </div>
@@ -43,4 +50,57 @@
     </div>
 {% endblock %}
 {% block js %}
+    <script>
+        //页面加载完成后，自动执行函数
+        $(function(){
+            bindClickBtnSms();
+        });
+        /*
+        * 点击验证码的按钮绑定事件*/
+        function bindClickBtnSms() {
+            $('#btnSms').click(function () {
+                //先清空错误信息
+                $('.error-msg').empty();
+                /*
+                * 获取用户输入的手机号
+                * 找到输入框的ID, 根据ID获取值*/
+                var phone = $('#id_phone').val();
+                //发送ajax请求， 把手机号发到后台
+                $.ajax({
+                    url: '{% url 'web:send_sms' %}',
+                    type:'GET',
+                    data:{phone: phone, tpl: 'register'},
+                    dataType:'JSON', // 将服务器端返回数据序列化为字典
+                    success:function (res) {
+                        if (res.status){
+                            sendSmsRemind();
+                        }else{
+                            console.log(res); //{status: false error:{phone: ["手机号格式错误"]}}
+                            $.each(res.error, function (key, value) {
+                                $('#id_'+key).next().text(value[0])
+                            })
+                        }
+                        //ajax请求发送成功之后，自动执行的函数,res是后端返回的值
+                    }
+                })
+            })
+        }
+
+        /**
+         * 倒计时
+         */
+        function sendSmsRemind() {
+            var $smsBtn = $('#btnSms');
+            $smsBtn.prop('disabled', true);
+            var time = 60;
+            var remind = setInterval(function () {
+                $smsBtn.val(time+'秒重新发送');
+                time = time-1;
+                if(time<1){
+                    clearInterval(remind);
+                    $smsBtn.val('点击获取验证码').prop('disabled', false)
+                }
+            }, 1000)
+        }
+    </script>
 {% endblock %}

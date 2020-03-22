@@ -42,6 +42,7 @@ def send_sms_multi(phone_num_list, template_id, param_list):
         response = sender.send_with_param(86, phone_num_list, template_id, param_list, sign=sms_sign)
     except HTTPError as e:
         response = {'result': 1000, 'errmsg': "网络异常发送失败"}
+
     return response
 
 
