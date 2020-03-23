@@ -15,7 +15,7 @@
 {% block content %}
      <div class="account">
         <div class="title">用户注册</div>
-        <form id="form" method="POST" novalidate>
+        <form id="regForm" method="POST" novalidate>
             {% csrf_token %}
             {% for field in form %}
                 {% if field.name == 'code' %}
@@ -43,7 +43,7 @@
 
             <div class="row">
                 <div class="col-xs-3">
-                    <input type="button" class="btn btn_primary" value="注册"/>
+                    <input id= 'btnSubmit' type="button" class="btn btn_primary" value="注册"/>
                 </div>
             </div>
         </form>
@@ -54,6 +54,7 @@
         //页面加载完成后，自动执行函数
         $(function(){
             bindClickBtnSms();
+            bindClickBtnSubmit();
         });
         /*
         * 点击验证码的按钮绑定事件*/
@@ -77,10 +78,38 @@
                         }else{
                             console.log(res); //{status: false error:{phone: ["手机号格式错误"]}}
                             $.each(res.error, function (key, value) {
-                                $('#id_'+key).next().text(value[0])
+                                $('#id_'+key).next().text(value[0]);
                             })
                         }
                         //ajax请求发送成功之后，自动执行的函数,res是后端返回的值
+                    }
+                })
+            })
+        }
+
+        /**
+         * 注册按钮点击事件
+         */
+        function bindClickBtnSubmit() {
+            $('#btnSubmit').click(function () {
+                // 收集表单数据
+                $('.error-msg').empty();
+                console.log('成功1');
+                $.ajax({
+                    url: '{% url 'web:register' %}',
+                    type: 'POST',
+                    data: $('#regForm').serialize(),
+                    dataType:'JSON',
+                    success: function (res) {
+                        if(res.status){
+                            location.href = res.data;
+                        }else{
+                            console.log(res);
+                            $.each(res.data, function (key, value) {
+                                //console.log(key, value);
+                                $('#id_'+key).next().text(value[0]);
+                            })
+                        }
                     }
                 })
             })
