@@ -1,6 +1,6 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
-{% block title %}用户注册{% endblock %}
+{% block title %}短信登陆{% endblock %}
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/account.css' %}">
@@ -14,8 +14,8 @@
 {% endblock %}
 {% block content %}
      <div class="account">
-         <div class="title">用户注册</div>
-         <form id="regForm" method="POST" novalidate>
+         <div class="title">短信登陆</div>
+         <form id="smsForm" method="POST" novalidate>
              {% csrf_token %}
              {% for field in form %}
                  {% if field.name == 'code' %}
@@ -40,9 +40,12 @@
                      </div>
                  {% endif %}
              {% endfor %}
+             <div style="float: right">
+                 <a href="{% url 'web:login' %}">用户名密码登陆?</a>
+             </div>
              <div class="row">
                  <div class="col-xs-3">
-                     <input id= 'btnSubmit' type="button" class="btn btn_primary" value="注册"/>
+                     <input id= 'btnSubmit' type="button" class="btn btn_primary" value="登录"/>
                  </div>
              </div>
          </form>
@@ -69,7 +72,7 @@
                 $.ajax({
                     url: '{% url 'web:send_sms' %}',
                     type:'GET',
-                    data:{phone: phone, tpl: 'register'},
+                    data:{phone: phone, tpl: 'login'},
                     dataType:'JSON', // 将服务器端返回数据序列化为字典
                     success:function (res) {
                         if (res.status){
@@ -93,11 +96,10 @@
             $('#btnSubmit').click(function () {
                 // 收集表单数据
                 $('.error-msg').empty();
-                console.log('成功1');
                 $.ajax({
-                    url: '{% url 'web:register' %}',
+                    url: '{% url 'web:login_sms' %}',
                     type: 'POST',
-                    data: $('#regForm').serialize(),
+                    data: $('#smsForm').serialize(),
                     dataType:'JSON',
                     success: function (res) {
                         if(res.status){
