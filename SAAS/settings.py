@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'simpleui',
+    # 'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -163,6 +163,15 @@ CACHES = {
 STATICFILES_DIRS = [
      os.path.join(BASE_DIR, "static"),
  ]
+
+WHITE_REGEX_URL_LIST=[
+    '/register/',
+    '/login/sms/',
+    '/login/',
+    '/image/code',
+    '/send/sms',
+    '/index/',
+]
 
 try:
     from .local_settings import *
