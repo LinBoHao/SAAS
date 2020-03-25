@@ -168,8 +168,8 @@ WHITE_REGEX_URL_LIST=[
     '/register/',
     '/login/sms/',
     '/login/',
-    '/image/code',
-    '/send/sms',
+    '/image/code/',
+    '/send/sms/',
     '/index/',
 ]
 
