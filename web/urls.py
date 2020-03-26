@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from django.conf.urls import url, include
-from web.views import account, home, project, manage
+from web.views import account, home, project, manage, wiki
 
 urlpatterns = [
     url(r'register/$', account.register, name='register'),
@@ -23,7 +23,9 @@ urlpatterns = [
         url('issues/$', manage.issues, name='issues'),
         url(r'statistics/$', manage.statistics, name='statistics'),
         url(r'file/$', manage.file, name='file'),
-        url(r'wiki/$', manage.wiki, name='wiki'),
+        url(r'wiki/$', wiki.wiki, name='wiki'),
+        url(r'wiki/add/$', wiki.wiki_add, name='wiki_add'),
+        url(r'wiki/catalog/$', wiki.catalog, name='wiki_catalog'),
         url(r'setting/$', manage.setting, name='setting'),], namespace='manage')),
 
 ]

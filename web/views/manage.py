@@ -22,9 +22,6 @@ def setting(request, project_id):
     return render(request, 'setting.html')
 
 
-def wiki(request, project_id):
-    return render(request, 'wiki.html')
-
 
 
 
