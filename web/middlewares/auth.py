@@ -12,9 +12,11 @@ class Tracer(object):
     def __int__(self):
         self.user = None
         self.price_policy = None
+        self.project = None
 
 
 class AuthMiddleware(MiddlewareMixin):
+
     def process_request(self, request):
         request.tracer = Tracer()
         """如果用户已登录，则在request中赋值"""
@@ -42,3 +44,20 @@ class AuthMiddleware(MiddlewareMixin):
             _object = models.Transaction.objects.filter(user=user_object, status=2, price_policy__category=1).first()
 
         request.tracer.price_policy = _object.price_policy
+
+
+    def process_view(self, request, view, args, kwargs):
+        # 判断url是否以manage开头
+        if not request.path_info.startswith('/manage/'):
+            return
+        project_id = kwargs.get('project_id')
+        user = request.tracer.user
+        project_object = models.Project.objects.filter(creator=user, id=project_id).first()
+        if project_object:
+            request.tracer.project = project_object
+            return
+        project_user_object = models.ProjectUser.objects.filter(user=user, project_id=project_id).first()
+        if project_user_object:
+            request.tracer.project = project_user_object.project
+            return
+        return redirect('web:project_list')
