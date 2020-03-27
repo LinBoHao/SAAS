@@ -26,6 +26,9 @@ urlpatterns = [
         url(r'wiki/$', wiki.wiki, name='wiki'),
         url(r'wiki/add/$', wiki.wiki_add, name='wiki_add'),
         url(r'wiki/catalog/$', wiki.catalog, name='wiki_catalog'),
+        url(r'wiki/delete/(?P<wiki_id>\d+)/$', wiki.delete, name='wiki_delete'),
+        url(r'wiki/edit/(?P<wiki_id>\d+)/$', wiki.edit, name='wiki_edit'),
+        url(r'wiki/upload/$', wiki.upload, name='wiki_load'),
         url(r'setting/$', manage.setting, name='setting'),], namespace='manage')),
 
 ]

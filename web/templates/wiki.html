@@ -1,6 +1,8 @@
 {% extends 'layout/manage.html' %}
+{% load static %}
 
 {% block css %}
+    <link rel="stylesheet" href="{% static 'plugin/editor-md/css/editormd.preview.min.css' %}">
     <style>
         .panel-body{
             padding: 0;
@@ -37,9 +39,20 @@
                     <i class="fa fa-book" aria-hidden="true"></i> wiki文档
                 </div>
                 <div class="function">
-                    <a type="button" class="btn btn-success btn-xs" href="{% url 'web:manage:wiki_add' project_id=request.tracer.project.id %}">
+                    <a type="button" class="btn btn-success btn-xs"
+                            href="{% url 'web:manage:wiki_add' project_id=request.tracer.project.id  %}">
                         <i class="fa fa-plus-circle"></i> 新建
                     </a>
+                    {% if wiki_object %}
+                        <a type="button" class="btn btn-primary btn-xs"
+                           href="{% url 'web:manage:wiki_edit' project_id=request.tracer.project.id wiki_id=wiki_object.id %}">
+                            <i class="fa fa-edit"></i> 编辑
+                        </a>
+                        <a type="button" class="btn btn-danger btn-xs"
+                           href="{% url 'web:manage:wiki_delete' project_id=request.tracer.project.id wiki_id=wiki_object.id %}">
+                            <i class="fa fa-trash"></i> 删除
+                        </a>
+                    {% endif %}
                 </div>
             </div>
             <div class="panel-body">
@@ -49,7 +62,9 @@
                 </div>
                 <div class="col-sm-9 content">
                     {%  if wiki_object %}
-                        {{ wiki_object.content }}
+                        <div id="previewMarkdown">
+                             <textarea>{{ wiki_object.content }}</textarea>
+                        </div>
                     {% else %}
                         <div style="text-align: center;margin-top: 50px;">
                             <h4>{{request.tracer.project.name}} wiki文档库</h4>
@@ -65,10 +80,23 @@
 {% endblock %}
 
 {% block js %}
+    <script src="{% static 'plugin/editor-md/editormd.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/marked.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/jquery.flowchart.min.js' %}"></script>
+
     <script>
         var WIKI_DETAIL_URL = '{% url 'web:manage:wiki' project_id=request.tracer.project.id %}';
+
+
+
         $(function () {
             initCatalog();
+            initPreviewMarkdown();
         });
         function initCatalog() {
             $.ajax({
@@ -93,6 +121,12 @@
                     }
                 }
             })
+        }
+
+        function initPreviewMarkdown() {
+            editormd.markdownToHTML('previewMarkdown', {
+                htmlDecode: 'style.script.iframe',
+            });
         }
     </script>
 {% endblock %}
