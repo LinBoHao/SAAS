@@ -23,7 +23,7 @@ def wiki_add(request, project_id):
     if request.method == 'GET':
         form = WikiModelForm(request)
         return render(request, 'wiki_add.html', {"form": form})
-    form = WikiModelForm(request, data = request.POST)
+    form = WikiModelForm(request, data=request.POST)
     if form.is_valid():
         if form.instance.parent:
             form.instance.depth = form.instance.parent.depth + 1
@@ -38,8 +38,7 @@ def wiki_add(request, project_id):
 
 
 def catalog(request, project_id):
-
-    data = models.Wiki.objects.filter(project=request.tracer.project)\
+    data = models.Wiki.objects.filter(project=request.tracer.project) \
         .values("id", 'title', 'parent_id').order_by('depth', 'id')
     return JsonResponse({'status': True, 'data': list(data)})
 
@@ -72,6 +71,7 @@ def edit(request, project_id, wiki_id):
         return redirect(preview_url)
 
     return render(request, 'wiki_form.html', {'form': form})
+
 
 @csrf_exempt
 def upload(request, project_id):

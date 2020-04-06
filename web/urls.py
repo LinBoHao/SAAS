@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from django.conf.urls import url, include
-from web.views import account, home, project, manage, wiki
+from web.views import account, home, project, manage, wiki, file
 
 urlpatterns = [
     url(r'register/$', account.register, name='register'),
@@ -22,14 +22,19 @@ urlpatterns = [
         url('dashboard/$', manage.dashboard, name='dashboard'),
         url('issues/$', manage.issues, name='issues'),
         url(r'statistics/$', manage.statistics, name='statistics'),
-        url(r'file/$', manage.file, name='file'),
+
+        url(r'file/$', file.file, name='file'),
+        url(r'file_delete/$', file.file_delete, name='file_delete'),
+
         url(r'wiki/$', wiki.wiki, name='wiki'),
         url(r'wiki/add/$', wiki.wiki_add, name='wiki_add'),
         url(r'wiki/catalog/$', wiki.catalog, name='wiki_catalog'),
         url(r'wiki/delete/(?P<wiki_id>\d+)/$', wiki.delete, name='wiki_delete'),
         url(r'wiki/edit/(?P<wiki_id>\d+)/$', wiki.edit, name='wiki_edit'),
         url(r'wiki/upload/$', wiki.upload, name='wiki_load'),
+
         url(r'setting/$', manage.setting, name='setting'),], namespace='manage')),
+
 
 ]
 
