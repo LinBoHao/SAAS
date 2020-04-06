@@ -27,8 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SECRET_ID = '000'
-SECRET_KEY = '000'
+TENCENT_SECRET_ID = '000'
+TENCENT_SECRET_KEY = '000'
 
 # Application definition
 

@@ -22,8 +22,8 @@ class PricePolicy(models.Model):
 
     project_num = models.PositiveIntegerField(verbose_name='项目数')
     project_member = models.PositiveIntegerField(verbose_name='项目成员数')
-    project_space = models.PositiveIntegerField(verbose_name='单项目空间')
-    per_file_size = models.PositiveIntegerField(verbose_name='单文件大小')
+    project_space = models.PositiveIntegerField(verbose_name='单项目空间', help_text='G')
+    per_file_size = models.PositiveIntegerField(verbose_name='单文件大小', help_text='M')
 
     create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 
@@ -110,6 +110,7 @@ class FileRepository(models.Model):
         (2, '文件夹'),
     )
     file_type = models.SmallIntegerField(verbose_name='类型')
+    file_size = models.BigIntegerField(verbose_name='文件大小', null=True, blank=True, help_text='字节')
     name = models.CharField(verbose_name='文件夹名称', max_length=32, help_text='文件/文件夹名')
     key = models.CharField(verbose_name='文件存储在COS中的KEY', max_length=128, null=True, blank=True)
     # file_path = models.CharField(verbose_name='文件路径', max_length=255, null=True, blank=True)

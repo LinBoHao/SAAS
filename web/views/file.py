@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
-from django.http import HttpResponse, JsonResponse
+import json
+
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from web import models
-from utils.tencent.cos import delete_file, delete_file_list
-from web.forms.file import FileFolderModelForm
+from utils.tencent.cos import delete_file, delete_file_list, credential
+from web.forms.file import FileFolderModelForm, FileModelForm
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -38,6 +40,7 @@ def file(request, project_id):
             'form': form,
             'file_object_list': file_object_list,
             'breadcrumb_list': breadcrumb_list,
+            'folder_object': parent_object,
         }
         return render(request, 'file.html', context)
 
@@ -100,6 +103,50 @@ def file_delete(request, project_id):
             request.tracer.project.save()
         delete_object.delete()
 
+@csrf_exempt
+def cos_credential(request, project_id):
+    # 获取cos上传临时凭证& 做容量限制：单文件&总容量
+    file_list = json.loads(request.body.decode('utf-8'))
+    per_file_limit = request.tracer.price_policy.per_file_size * 1024 * 1024
+    total_file_limit = request.tracer.price_policy.per_file_size * 1024 * 1024 * 1024
 
+    total_size = 0
+    for item in file_list:
+        if item['size'] > per_file_limit:
+            name = item['name']
+            return JsonResponse({
+                'status': False,
+                'error': f'单文件超出限制(最大{request.tracer.price_policy.per_file_size}M, 文件:{name})'})
+        total_size += item['size']
+    if total_size + request.tracer.project.use_space > total_file_limit:
+        return JsonResponse({
+            'status': False,
+            'error': '容量超出限制, 请升级套餐'})
 
+    data_dict = credential(request.tracer.project.bucket, request.tracer.project.region,)
+    return JsonResponse({'status': True, 'data': data_dict})
 
+@csrf_exempt
+def file_post(request, project_id):
+    # 将上传成功的文件写入到数据库
+    print(request.POST)
+    # 把获取到的数据写入到数据库
+    form = FileModelForm(request, data=request.POST)
+    if form.is_valid():
+        data_dict = form.cleaned_data
+        data_dict.pop('etag')
+        data_dict.update({'project': request.tracer.project, 'file_type': 1, 'update_user': request.tracer.user})
+        instance = models.FileRepository.objects.create(**data_dict)
+
+        # 项目的一使用空间：更新
+        request.tracer.project.use_space += data_dict['file_size']
+        result = {
+            'id': instance.id,
+            'name': instance.name,
+            'file_size': instance.file_size,
+            'username': instance.update_user.username,
+            'datetime': instance.update_time.strftime('%Y年-%m月-%d日 %H:%M')
+        }
+        return JsonResponse({'status': True, 'data': result})
+
+    return JsonResponse({'status': False, 'data': '文件错误'})

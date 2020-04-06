@@ -24,7 +24,9 @@ urlpatterns = [
         url(r'statistics/$', manage.statistics, name='statistics'),
 
         url(r'file/$', file.file, name='file'),
-        url(r'file_delete/$', file.file_delete, name='file_delete'),
+        url(r'file/delete/$', file.file_delete, name='file_delete'),
+        url(r'file/post/$', file.file_post, name='file_post'),
+        url(r'cos/credential/$', file.cos_credential, name='cos_credential'),
 
         url(r'wiki/$', wiki.wiki, name='wiki'),
         url(r'wiki/add/$', wiki.wiki_add, name='wiki_add'),
