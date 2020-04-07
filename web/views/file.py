@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import json
 
-from django.http import JsonResponse
+import requests
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 
 from web import models
 from utils.tencent.cos import delete_file, delete_file_list, credential
@@ -12,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def file(request, project_id):
-
     parent_object = None
     folder_id = request.GET.get('folder', '')
     if folder_id.isdecimal():
@@ -49,7 +50,8 @@ def file(request, project_id):
     fid = request.POST.get('fid', '')
     edit_object = None
     if fid.isdecimal():
-       edit_object = models.FileRepository.objects.filter(id=int(fid), file_type=2, project=request.tracer.project).first()
+        edit_object = models.FileRepository.objects.filter(id=int(fid), file_type=2,
+                                                           project=request.tracer.project).first()
     if edit_object:
         form = FileFolderModelForm(request, parent_object, data=request.POST, instance=edit_object)
     else:
@@ -87,7 +89,8 @@ def file_delete(request, project_id):
         folder_list = [delete_object]
         key_list = []
         for folder in folder_list:
-            child_list = models.FileRepository.objects.filter(project=request.tracer.project, parent=folder).order_by('-file_type')
+            child_list = models.FileRepository.objects.filter(project=request.tracer.project, parent=folder).order_by(
+                '-file_type')
             for child in child_list:
                 if child.file_type == 2:
                     folder_list.append(child)
@@ -102,6 +105,8 @@ def file_delete(request, project_id):
             request.tracer.project.use_space -= total_size
             request.tracer.project.save()
         delete_object.delete()
+        return JsonResponse({'status': True})
+
 
 @csrf_exempt
 def cos_credential(request, project_id):
@@ -123,8 +128,9 @@ def cos_credential(request, project_id):
             'status': False,
             'error': '容量超出限制, 请升级套餐'})
 
-    data_dict = credential(request.tracer.project.bucket, request.tracer.project.region,)
+    data_dict = credential(request.tracer.project.bucket, request.tracer.project.region, )
     return JsonResponse({'status': True, 'data': data_dict})
+
 
 @csrf_exempt
 def file_post(request, project_id):
@@ -145,8 +151,23 @@ def file_post(request, project_id):
             'name': instance.name,
             'file_size': instance.file_size,
             'username': instance.update_user.username,
-            'datetime': instance.update_time.strftime('%Y年-%m月-%d日 %H:%M')
+            'datetime': instance.update_time.strftime("%Y-%m-%d %H:%M"),
+            'download_url': reverse('web:manage:file_download',
+                                    kwargs={"project_id": project_id, 'file_id': instance.id})
         }
+        print(result['datetime'])
         return JsonResponse({'status': True, 'data': result})
 
     return JsonResponse({'status': False, 'data': '文件错误'})
+
+
+def file_download(request, project_id, file_id):
+    file_object = models.FileRepository.objects.filter(id=file_id, project_id=project_id).first()
+    res = requests.get(file_object.file_path)
+    data = res.content
+
+    from django.utils.encoding import escape_uri_path
+
+    response = HttpResponse(data, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={escape_uri_path(file_object.name)}'
+    return response

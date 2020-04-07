@@ -4,26 +4,31 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'plugin/editor-md/css/editormd.min.css' %}">
     <style>
-        .panel-body{
+        .panel-body {
             padding: 0;
         }
-        .panel-default .panel-heading{
+
+        .panel-default .panel-heading {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
         }
-        .title-list{
+
+        .title-list {
             border-right: 1px solid #dddddd;
             min-height: 500px;
         }
-        .title-list ul{
+
+        .title-list ul {
             padding-left: 15px;
         }
-        .title-list ul a{
+
+        .title-list ul a {
             display: block;
             padding: 5px 0;
         }
-        .content{
+
+        .content {
             border-left: 1px solid #dddddd;
             min-height: 600px;
             margin-left: -1px;
@@ -39,7 +44,8 @@
                     <i class="fa fa-book" aria-hidden="true"></i> wiki文档
                 </div>
                 <div class="function">
-                    <a type="button" class="btn btn-success btn-xs" href="{% url 'web:manage:wiki_add' project_id=request.tracer.project.id %}">
+                    <a type="button" class="btn btn-success btn-xs"
+                       href="{% url 'web:manage:wiki_add' project_id=request.tracer.project.id %}">
                         <i class="fa fa-plus-circle"></i> 新建
                     </a>
                 </div>
@@ -86,39 +92,40 @@
             initCatalog();
             initEditor();
         });
+
         function initCatalog() {
             $.ajax({
-                url:'{% url 'web:manage:wiki_catalog' project_id=request.tracer.project.id %}',
+                url: '{% url 'web:manage:wiki_catalog' project_id=request.tracer.project.id %}',
                 type: 'GET',
                 dataType: 'JSON',
-                success:function (res) {
+                success: function (res) {
                     console.log(res);
-                    if(res.status){
+                    if (res.status) {
                         $.each(res.data, function (index, item) {
                             var href = WIKI_DETAIL_URL + '?wiki_id=' + item.id;
-                            var li = $('<li>').attr('id', 'id_'+item.id).append($('<a>').text(item.title).attr('href', href))
+                            var li = $('<li>').attr('id', 'id_' + item.id).append($('<a>').text(item.title).attr('href', href))
                                 .append($('<ul>'));
-                            if(!item.parent_id){
+                            if (!item.parent_id) {
                                 $('#catalog').append(li)
-                            }else{
-                                $('#id_'+item.parent_id).children('ul').append(li);
+                            } else {
+                                $('#id_' + item.parent_id).children('ul').append(li);
                             }
                         })
-                    }else{
+                    } else {
                         alert('初始化目录失败')
                     }
                 }
             })
         }
 
-         function initEditor() {
+        function initEditor() {
             editormd('editor', {
                 placeholder: '请输入内容',
                 height: 500,
                 path: "{% static 'plugin/editor-md/lib/' %}",
                 imageUpload: true,
-                imageFormats:['jpg', 'gif', 'jpeg', 'png'],
-                imageUploadURL:WIKI_LOAD_URL
+                imageFormats: ['jpg', 'gif', 'jpeg', 'png'],
+                imageUploadURL: WIKI_LOAD_URL
             });
         }
     </script>

@@ -43,7 +43,7 @@ class FileModelForm(forms.ModelForm):
         self.request = request
 
     def clean_file_path(self):
-        return f'https://{self.cleaned_data["file_path"] }'
+        return "https://{}".format(self.cleaned_data['file_path'])
 
     # def clean(self):
     #     etag = self.cleaned_data['etag']

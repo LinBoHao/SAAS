@@ -106,12 +106,17 @@
                             {% endif %}
                         </td>
                         <td>{{ item.update_user.username }}</td>
-                        <td>{{ item.update_time }}</td>
+                        <td>{{ item.update_time|date:"Y-m-d H:i" }}</td>
                         <td>
                             {% if item.file_type == 2 %}
                                 <a class="btn btn-default btn-xs" data-toggle="modal" data-target="#addModal"
                                    data-whatever="编辑文件夹" data-name="{{ item.name }}" data-fid="{{ item.id }}">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </a>
+                            {% else %}
+                                <a class="btn btn-default btn-xs"
+                                href="{% url 'web:manage:file_download' project_id=request.tracer.project.id file_id=item.id %}">
+                                    <i class="fa fa-cloud-download" aria-hidden="true"></i>
                                 </a>
                             {% endif %}
                             <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#alertModal"
@@ -164,16 +169,17 @@
         </div>
     </div>
     <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="alert alert-danger alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                    aria-hidden="true">×</span></button>
-            <h4>是否确定删除？</h4>
-            <p>文件夹包含的所有文件都会被删除.</p>
-            <p style="text-align: right;">
-                <a class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</a>
-                <button id="btnDelete" type="button" class="btn btn-danger btn-sm">确定</button>
-            </p>
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">×</span></button>
+                <h4>是否确定删除？</h4>
+                <p>文件夹包含的所有文件都会被删除.</p>
+                <p style="text-align: right;">
+                    <a class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</a>
+                    <button id="btnDelete" type="button" class="btn btn-danger btn-sm">确定</button>
+                </p>
+            </div>
         </div>
     </div>
     <div class="hide">
@@ -202,10 +208,10 @@
                 <td class="update_user_username"></td>
                 <td class="update_datetime"></td>
                 <td>
-{#                    <a class="btn btn-default btn-xs download">#}
-{#                        <i class="fa fa-cloud-download" aria-hidden="true"></i>#}
-{#                    </a>#}
-                     <a class="btn btn-danger btn-xs delete" data-toggle="modal" data-target="#alertModal">
+                    <a class="btn btn-default btn-xs download">
+                        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                    </a>
+                    <a class="btn btn-danger btn-xs delete" data-toggle="modal" data-target="#alertModal">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
@@ -295,10 +301,10 @@
                 $('#progressList').empty();
                 var fileList = $(this)[0].files;
                 var checkFileList = [];
+                var count = fileList.length;
                 $.each(fileList, function (index, fileObject) {
                     checkFileList.push({'name': fileObject.name, 'size': fileObject.size});
                 });
-                console.log(checkFileList);
                 var cos_object = new COS({
                     getAuthorization: function (options, callback) {
                         //向django后台发送请求，获取临时凭证
@@ -346,7 +352,7 @@
                                 file_size: fileSize,
                                 parent: "{{ folder_object.id }}",
                                 etag: data.ETag,
-                                file_path: data.location,
+                                file_path: data.Location,
                             }, function (res) {
                                 var newTr = $('#rowTpl').find('tr').clone();
                                 newTr.find('.name').text(res.data.name);
@@ -354,9 +360,14 @@
                                 newTr.find('.update_user_username').text(res.data.username);
                                 newTr.find('.update_datetime').text(res.data.datetime);
                                 newTr.find('.delete').attr('data-fid', res.data.id);
+                                newTr.find('.download').attr('href', res.data.download_url);
                                 $('#rowList').append(newTr);
 
                                 tr.remove();
+                                count -= 1;
+                                if (count === 0) {
+                                    $('#uploadProgress').addClass('hide');
+                                }
                             })
                         } else {
                             tr.find('.progress-error').text('上传失败')
