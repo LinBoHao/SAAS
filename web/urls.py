@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 
 from django.conf.urls import url, include
-from web.views import account, home, project, manage, wiki, file, setting, issues
+from django.views.generic import RedirectView
+
+from web.views import account, home, project, statistics, wiki, file, setting, issues, dashboard
 
 urlpatterns = [
 
@@ -20,8 +22,10 @@ urlpatterns = [
 
     # 项目管理
     url(r'^manage/(?P<project_id>\d+)/', include([
-        url('^dashboard/$', manage.dashboard, name='dashboard'),
-        url(r'^statistics/$', manage.statistics, name='statistics'),
+
+        url(r'^statistics/$', statistics.statistics, name='statistics'),
+        url(r'^statistics/priority/$', statistics.statistics_priority, name='statistics_priority'),
+        url(r'^statistics/project/user/$', statistics.statistics_project_user, name='statistics_project_user'),
 
         url(r'^file/$', file.file, name='file'),
         url(r'^file/delete/$', file.file_delete, name='file_delete'),
@@ -30,8 +34,13 @@ urlpatterns = [
         url(r'^cos/credential/$', file.cos_credential, name='cos_credential'),
 
         url('^issues/$', issues.issues, name='issues'),
-        url('^issues/detail/(?P<issues_id>\d+)$', issues.issues_detail, name='issues_detail'),
-        url('^issues/record/(?P<issues_id>\d+)$', issues.issues_record, name='issues_record'),
+        url('^issues/detail/(?P<issues_id>\d+)/$', issues.issues_detail, name='issues_detail'),
+        url('^issues/record/(?P<issues_id>\d+)/$', issues.issues_record, name='issues_record'),
+        url('^issues/change/(?P<issues_id>\d+)/$', issues.issues_change, name='issues_change'),
+        url('^issues/invite/url/$', issues.invite_url, name='invite_url'),
+
+        url('^dashboard/$', dashboard.dashboard, name='dashboard'),
+        url('^dashboard/issues/chart/$', dashboard.issues_chart, name='issues_chart'),
 
         url(r'^wiki/$', wiki.wiki, name='wiki'),
         url(r'^wiki/add/$', wiki.wiki_add, name='wiki_add'),
@@ -41,7 +50,8 @@ urlpatterns = [
         url(r'^wiki/upload/$', wiki.upload, name='wiki_load'),
 
         url(r'^setting/$', setting.setting, name='setting'),
-        url(r'^setting/delete/$', setting.delete, name='setting_delete'),
-    ], namespace='manage'), ),
+        url(r'^setting/delete/$', setting.delete, name='setting_delete'),], namespace='manage'), ),
+
+        url('^invite/url/(?P<code>\w+)$', issues.invite_join, name='invite_join'),
 
 ]

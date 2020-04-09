@@ -135,7 +135,6 @@ def cos_credential(request, project_id):
 @csrf_exempt
 def file_post(request, project_id):
     # 将上传成功的文件写入到数据库
-    print(request.POST)
     # 把获取到的数据写入到数据库
     form = FileModelForm(request, data=request.POST)
     if form.is_valid():
@@ -145,7 +144,9 @@ def file_post(request, project_id):
         instance = models.FileRepository.objects.create(**data_dict)
 
         # 项目的一使用空间：更新
+
         request.tracer.project.use_space += data_dict['file_size']
+        request.tracer.project.save()
         result = {
             'id': instance.id,
             'name': instance.name,
@@ -155,7 +156,6 @@ def file_post(request, project_id):
             'download_url': reverse('web:manage:file_download',
                                     kwargs={"project_id": project_id, 'file_id': instance.id})
         }
-        print(result['datetime'])
         return JsonResponse({'status': True, 'data': result})
 
     return JsonResponse({'status': False, 'data': '文件错误'})

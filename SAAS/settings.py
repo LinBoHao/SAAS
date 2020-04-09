@@ -25,7 +25,7 @@ SECRET_KEY = '0+s+a(^v$0($n8na$9abv-%wwl+vi!u-0!5ht8*w+3i!=do&j_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 TENCENT_SECRET_ID = '000'
 TENCENT_SECRET_KEY = '000'
@@ -122,7 +122,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 #自己的短信模板
 SMS = 0
