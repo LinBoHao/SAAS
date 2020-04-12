@@ -94,3 +94,7 @@ def image_code(request):
 def logout(request):
     request.session.flush()
     return redirect('web:index')
+
+
+def index(request):
+    return render(request, 'index.html')

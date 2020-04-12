@@ -17,8 +17,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
+from SAAS import views
+
 urlpatterns = [
+    url(r'^favicon.ico$', RedirectView.as_view(url=r'web/static/favicon.ico', permanent=True)),
     url(r'^admin/', admin.site.urls),
     url(r'^app01/', include('app01.urls', namespace='app01')),
+    url(r'^$', views.home),
     url(r'^', include('web.urls', 'web')),
 ]

@@ -33,15 +33,16 @@ TENCENT_SECRET_KEY = '000'
 # Application definition
 
 INSTALLED_APPS = [
-    # 'simpleui',
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'app01.apps.App01Config',
-    'web.apps.WebConfig'
+    'web.apps.WebConfig',
 ]
 
 MIDDLEWARE = [
@@ -131,8 +132,6 @@ SMS = 0
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
-
 
 # 短信配置
 TENCENT_SMS_APP_ID = 66666666  # 自己应用ID
@@ -162,6 +161,7 @@ CACHES = {
     }
 }
 
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
      os.path.join(BASE_DIR, "static"),
  ]
