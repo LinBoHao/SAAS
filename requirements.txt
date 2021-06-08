@@ -3,7 +3,7 @@ asgiref==3.2.5
 Django==1.11.28
 django-redis==4.11.0
 django-simpleui==3.9.1
-Pillow==7.0.0
+Pillow==8.2.0
 PyMySQL==0.9.3
 pytz==2019.3
 qcloudsms-py==0.1.4
