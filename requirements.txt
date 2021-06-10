@@ -1,6 +1,6 @@
 
 asgiref==3.2.5
-Django==1.11.28
+Django==2.2.24
 django-redis==4.11.0
 django-simpleui==3.9.1
 Pillow==7.0.0
